@@ -6,10 +6,10 @@ use ExtUtils::MakeMaker;
 my %WriteMakefileArgs = (
     NAME             => 'WWW::Crawl',
     AUTHOR           => q{Ian Boddison <bod@cpan.org>},
-    VERSION_FROM     => 'lib/WWW/Crawl.pm',
-    ABSTRACT_FROM    => 'lib/WWW/Crawl.pm',
     LICENSE          => 'Perl',
     MIN_PERL_VERSION => '5.016',
+    VERSION  => '0.1',
+    ABSTRACT => 'Lightweight web crawler with optional JS rendering',
     CONFIGURE_REQUIRES => {
         'ExtUtils::MakeMaker' => '0',
     },
@@ -60,4 +60,5 @@ delete $WriteMakefileArgs{LICENSE}
     unless eval { ExtUtils::MakeMaker->VERSION('6.31'); 1 };
 
 WriteMakefile(%WriteMakefileArgs);
+
 
