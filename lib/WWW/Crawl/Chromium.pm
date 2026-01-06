@@ -34,8 +34,9 @@ sub _fetch_page {
     );
 
     my $stderr = gensym;
+    my ($stdin, $stdout);
     my $pid = eval {
-        open3(my $stdin, my $stdout, $stderr, @command);
+        open3($stdin, $stdout, $stderr, @command);
     };
     if ($@) {
         return {
