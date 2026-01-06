@@ -3,7 +3,7 @@ package WWW::Crawl;
 use strict;
 use warnings;
 
-use HTTP::Tiny 0.083;
+use HTTP::Tiny;
 use URI;
 use JSON::PP;
 use Carp qw(croak);
@@ -226,3 +226,4 @@ This program is released under the following license:
 =cut
 
 1; # End of WWW::Crawl
+
