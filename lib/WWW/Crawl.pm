@@ -8,7 +8,7 @@ use URI;
 use JSON::PP;
 use Carp qw(croak);
 
-our $VERSION = '0.2';
+our $VERSION = '0.3';
 # $VERSION = eval $VERSION;
 
 # TODO:

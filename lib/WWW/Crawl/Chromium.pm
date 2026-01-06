@@ -10,7 +10,7 @@ use IPC::Open3 qw(open3);
 use Symbol qw(gensym);
 use IO::Select;
 
-our $VERSION = '0.2';
+our $VERSION = '0.3';
 # $VERSION = eval $VERSION;
 
 sub _fetch_page {
