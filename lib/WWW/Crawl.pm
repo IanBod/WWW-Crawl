@@ -8,7 +8,7 @@ use URI;
 use JSON::PP;
 use Carp qw(croak);
 
-our $VERSION = '0.1';
+our $VERSION = '0.2';
 # $VERSION = eval $VERSION;
 
 # TODO:
@@ -226,4 +226,5 @@ This program is released under the following license:
 =cut
 
 1; # End of WWW::Crawl
+
 
