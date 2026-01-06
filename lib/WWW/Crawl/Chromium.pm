@@ -9,7 +9,7 @@ use Carp qw(croak);
 use IPC::Open3 qw(open3);
 use Symbol qw(gensym);
 
-our $VERSION = '0.1';
+our $VERSION = '0.2';
 # $VERSION = eval $VERSION;
 
 sub _fetch_page {
