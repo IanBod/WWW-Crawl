@@ -48,7 +48,7 @@ sub crawl {
         next if $parsed{$url};
         $parsed{$url}++;
         
-        my $resp = $self->{'http'}->request('GET', $url);
+        my $resp = $self->_fetch_page($url);
         next if $resp->{'status'} == 404;
         if (!$resp->{'success'}) {
             croak "WWW::Crawl: HTTP Response " . $resp->{'status'} . " - " . $resp->{'reason'} . "\n" . $resp->{'content'};
@@ -102,6 +102,12 @@ sub crawl {
     
     return keys %links if $self->{'nolinks'};
     return keys %parsed;
+}
+
+sub _fetch_page {
+    my ($self, $url) = @_;
+
+    return $self->{'http'}->request('GET', $url);
 }
 
 1;
