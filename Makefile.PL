@@ -1,4 +1,4 @@
-use 5.010;
+use 5.016;
 use strict;
 use warnings;
 use ExtUtils::MakeMaker;
@@ -9,7 +9,7 @@ my %WriteMakefileArgs = (
     VERSION_FROM     => 'lib/WWW/Crawl.pm',
     ABSTRACT_FROM    => 'lib/WWW/Crawl.pm',
     LICENSE          => 'Perl',
-    MIN_PERL_VERSION => '5.010',
+    MIN_PERL_VERSION => '5.016',
     CONFIGURE_REQUIRES => {
         'ExtUtils::MakeMaker' => '0',
     },
@@ -60,3 +60,4 @@ delete $WriteMakefileArgs{LICENSE}
     unless eval { ExtUtils::MakeMaker->VERSION('6.31'); 1 };
 
 WriteMakefile(%WriteMakefileArgs);
+
