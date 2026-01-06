@@ -119,7 +119,7 @@ WWW::Crawl - A simple web crawler for extracting links and more from web pages
 
 =head1 VERSION
 
-This documentation refers to WWW::Crawl version 0.1.
+This documentation refers to WWW::Crawl version 0.2.
 
 =head1 SYNOPSIS
 
@@ -216,7 +216,7 @@ L<https://metacpan.org/release/WWW-Crawl>
 
 =head1 LICENSE AND COPYRIGHT
 
-This software is Copyright (c) 2023 by Ian Boddison.
+This software is Copyright (c) 2023-2026 by Ian Boddison.
 
 This program is released under the following license:
 
