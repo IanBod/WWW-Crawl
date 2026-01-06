@@ -8,6 +8,7 @@ use parent 'WWW::Crawl';
 use Carp qw(croak);
 use IPC::Open3 qw(open3);
 use Symbol qw(gensym);
+use IO::Select;
 
 our $VERSION = '0.2';
 # $VERSION = eval $VERSION;
@@ -41,10 +42,11 @@ sub _fetch_page {
         $url,
     );
 
-    my $stderr = gensym;
-    my ($stdin, $stdout);
+    my ($stdin, $stdout, $stderr);
+    $stderr = gensym;
+
     my $pid = eval {
-        open3($stdin, $stdout, $stdout, @command);
+        open3($stdin, $stdout, $stderr, @command);
     };
     if ($@) {
         return {
@@ -57,22 +59,45 @@ sub _fetch_page {
 
     close $stdin;
 
+    my $sel = IO::Select->new();
+    $sel->add($stdout, $stderr);
+
     my $content = '';
     my $error_output = '';
     my $timed_out = 0;
 
-    local $SIG{'ALRM'} = sub { die "Chromium timeout\n"; };
-
     eval {
+        local $SIG{'ALRM'} = sub { die "Chromium timeout\n"; };
         alarm $timeout;
-        $content = do { local $/; <$stdout> // '' };
-        $error_output = do { local $/; <$stderr> // '' };
+
+        while (my @ready = $sel->can_read) {
+            foreach my $fh (@ready) {
+                my $buf;
+                my $len = sysread($fh, $buf, 4096);
+                if (!defined $len) {
+                    $sel->remove($fh);
+                    next;
+                }
+                if ($len == 0) {
+                    $sel->remove($fh);
+                    next;
+                }
+                
+                if ($fh == $stdout) {
+                    $content .= $buf;
+                } else {
+                    $error_output .= $buf;
+                }
+            }
+        }
         waitpid($pid, 0);
         alarm 0;
     };
 
     if ($@) {
-        $timed_out = 1;
+        if ($@ eq "Chromium timeout\n") {
+            $timed_out = 1;
+        }
     }
 
     if ($timed_out) {
@@ -89,6 +114,7 @@ sub _fetch_page {
     my $exit_code = $? >> 8;
     if ($exit_code != 0) {
         my $reason = $error_output || "Chromium exited with status $exit_code";
+        $reason =~ s/\s+$//;
         return {
             'success' => 0,
             'status'  => 599,
