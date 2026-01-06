@@ -38,15 +38,9 @@ jobs:
           perl -v
           ${{ ( startsWith(matrix.os, 'windows') && '(get-command cpanm).Path' ) || 'which cpanm' }}
           cpanm --version
-      - name: Run Makefile.PL and get prereqs
-        # but there might be some modules needed by configure, which makes chicken/egg problem
+      - name: Install deps and test
         run: |
-          # ${{ ( startsWith(matrix.os, 'windows') && 'Get-ChildItem -Recurse') || 'ls -latrR' }}
-          # install those dependencies
-          cpanm --installdeps .
-      - name: cpanm test-only
-        run: |
-          cpanm --test-only --verbose --no-interactive .
+          cpanm --verbose --no-interactive .
       - name: verbose prove (for debug)
         run: |
           prove -vl t
