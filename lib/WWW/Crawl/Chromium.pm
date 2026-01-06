@@ -25,9 +25,17 @@ sub _fetch_page {
     my @command = (
         $chromium_path,
         '--headless',
+        '--no-sandbox',
         '--disable-gpu',
+        '--disable-dev-shm-usage',
+        '--disable-software-rasterizer',
+        '--disable-features=VaapiVideoDecoder',
+        '--password-store=basic',
+        '--use-mock-keychain',
+        '--log-level=3',
         '--no-first-run',
         '--no-default-browser-check',
+        '--run-all-compositor-stages-before-draw',
         "--virtual-time-budget=$virtual_time_budget",
         '--dump-dom',
         $url,
@@ -36,7 +44,7 @@ sub _fetch_page {
     my $stderr = gensym;
     my ($stdin, $stdout);
     my $pid = eval {
-        open3($stdin, $stdout, $stderr, @command);
+        open3($stdin, $stdout, $stdout, @command);
     };
     if ($@) {
         return {
