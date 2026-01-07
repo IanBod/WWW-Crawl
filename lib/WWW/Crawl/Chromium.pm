@@ -10,7 +10,7 @@ use IPC::Open3 qw(open3);
 use Symbol qw(gensym);
 use IO::Select;
 
-our $VERSION = '0.3';
+our $VERSION = '0.4';
 # $VERSION = eval $VERSION;
 
 sub _fetch_page {
@@ -152,7 +152,7 @@ WWW::Crawl::Chromium - Crawl JavaScript-rendered pages with Chromium
 
 =head1 VERSION
 
-This documentation refers to WWW::Crawl::Chromium version 0.2.
+This documentation refers to WWW::Crawl::Chromium version 0.4.
 
 =head1 SYNOPSIS
 

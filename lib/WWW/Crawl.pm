@@ -8,7 +8,7 @@ use URI;
 use JSON::PP;
 use Carp qw(croak);
 
-our $VERSION = '0.3';
+our $VERSION = '0.4';
 # $VERSION = eval $VERSION;
 
 # TODO:
@@ -121,7 +121,7 @@ WWW::Crawl - A simple web crawler for extracting links and more from web pages
 
 =head1 VERSION
 
-This documentation refers to WWW::Crawl version 0.2.
+This documentation refers to WWW::Crawl version 0.4.
 
 =head1 SYNOPSIS
 
