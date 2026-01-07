@@ -20,7 +20,7 @@ sub _fetch_page {
         || $self->{'chrome_path'}
         || $self->{'chromium'}
         || 'chromium';
-    my $timeout = $self->{'chromium_timeout'} // 60;
+    my $timeout = $self->{'chromium_timeout'} // 120;
     my $virtual_time_budget = $self->{'chromium_time_budget'} // 10000;
     my $proxy = $self->{'proxy'} // 'direct://';
 
