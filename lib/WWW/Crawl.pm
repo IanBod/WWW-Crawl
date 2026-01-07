@@ -55,6 +55,8 @@ sub crawl {
         }
 
         $page = $resp->{'content'};
+
+        #print "\nContent: $page\n\n";
         
         while ($page =~ /href *?= *?("|')(.*?)('|")/gc) {
             my $link = URI->new($2)->abs($uri)->canonical;
@@ -96,7 +98,7 @@ sub crawl {
             }
         }
         
-        &$callback($url) if $callback;
+        &$callback($url, $page) if $callback;
         $flag = 0 if $self->{'nolinks'};
     }
     
@@ -167,7 +169,7 @@ C<nolinks>: Don't follow links found in the starting page.  This option is provi
 
 Starts crawling the web starting from the given URL. The C<$url> parameter specifies the starting URL.
 
-The optional C<$callback> parameter is a reference to a subroutine that will be called for each visited page. It receives the URL of the visited page as an argument.
+The optional C<$callback> parameter is a reference to a subroutine that will be called for each visited page. It receives the URL of the visited page and the body of the page as arguments.
 
 The C<crawl> method will explore the provided URL and its linked resources. It will also follow links found in form actions, external JavaScript files, and JavaScript window.open links. The crawling process continues until no more unvisited links are found.
 
