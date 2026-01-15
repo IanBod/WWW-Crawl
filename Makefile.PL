@@ -18,6 +18,7 @@ WriteMakefile(
         'URI'        => '5.05',
         'JSON::PP'   => '2.00',
         'Carp'       => 0,
+        'IPC::Run'   => 0,
     },
 
     TEST_REQUIRES => {
