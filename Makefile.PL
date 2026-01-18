@@ -29,6 +29,12 @@ if (!$chromium_found) {
         "WWW::Crawl::Chromium will require chromium_path or chrome_path.\n";
 }
 
+my %dist;
+if ($^O eq 'MSWin32') {
+    $dist{COMPRESS} = q{perl -MIO::Compress::Gzip=gzip,:constants -e "my $$in = $$ARGV[0]; gzip($$in => qq($$in.gz), q(Level) => Z_BEST_COMPRESSION, q(BinModeIn) => 1) or die q(gzip failed); unlink $$in;"};
+    $dist{SUFFIX}   = 'gz';
+}
+
 WriteMakefile(
     NAME         => 'WWW::Crawl',
     VERSION      => '0.5',
@@ -53,4 +59,6 @@ WriteMakefile(
     clean => {
         FILES => 'WWW-Crawl-*',
     },
+
+    dist => \%dist,
 );
