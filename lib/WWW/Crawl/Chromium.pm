@@ -8,7 +8,7 @@ use parent 'WWW::Crawl';
 use Carp qw(croak);
 use IPC::Run qw(start timeout);
 
-our $VERSION = '0.4';
+our $VERSION = '0.5';
 # $VERSION = eval $VERSION;
 
 sub _fetch_page {
@@ -144,7 +144,7 @@ WWW::Crawl::Chromium - Crawl JavaScript-rendered pages with Chromium
 
 =head1 VERSION
 
-This documentation refers to WWW::Crawl::Chromium version 0.4.
+This documentation refers to WWW::Crawl::Chromium version 0.5.
 
 =head1 SYNOPSIS
 
@@ -195,6 +195,14 @@ allow JavaScript to settle. Defaults to 10000.
 =item *
 
 C<proxy>: Proxy server to use (e.g. C<direct://> or C<http://proxy.example.com:8080>). Defaults to C<direct://>.
+
+=item *
+
+C<retry_count>: Number of times to retry Chromium fetches before giving up. Defaults to 0.
+
+=item *
+
+C<debug>: Enable debug logging to STDERR when set to a true value.
 
 =back
 

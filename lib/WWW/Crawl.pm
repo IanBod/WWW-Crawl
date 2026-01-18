@@ -9,7 +9,7 @@ use JSON::PP;
 use Carp qw(croak);
 use IO::Uncompress::Gunzip qw(gunzip $GunzipError);
 
-our $VERSION = '0.4';
+our $VERSION = '0.5';
 # $VERSION = eval $VERSION;
 
 # TODO:
@@ -133,7 +133,7 @@ WWW::Crawl - A simple web crawler for extracting links and more from web pages
 
 =head1 VERSION
 
-This documentation refers to WWW::Crawl version 0.4.
+This documentation refers to WWW::Crawl version 0.5.
 
 =head1 SYNOPSIS
 

@@ -8,7 +8,7 @@ use parent 'WWW::Crawl';
 use URI;
 use WWW::Crawl::Chromium;
 
-our $VERSION = '0.4';
+our $VERSION = '0.5';
 # $VERSION = eval $VERSION;
 
 sub new {
@@ -155,7 +155,7 @@ WWW::Crawl::Auto - Crawl pages and automatically switch between HTTP and Chromiu
 
 =head1 VERSION
 
-This documentation refers to WWW::Crawl::Auto version 0.4.
+This documentation refers to WWW::Crawl::Auto version 0.5.
 
 =head1 SYNOPSIS
 
@@ -203,6 +203,15 @@ to 512.
 
 C<auto_decider>: Coderef invoked as C<auto_decider-E<gt>($url, $resp, $self)>
 to decide whether Chromium should be used. Return true to use Chromium.
+
+=item *
+
+C<retry_count>: Number of times to retry Chromium fetches before giving up.
+Defaults to 0.
+
+=item *
+
+C<debug>: Enable debug logging to STDERR when set to a true value.
 
 =back
 
