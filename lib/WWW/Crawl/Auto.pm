@@ -16,6 +16,7 @@ sub new {
     my %attrs = @_;
 
     $attrs{'auto_min_bytes'} //= 512;
+    $attrs{'retry_count'} //= 0;
 
     my $self = $class->SUPER::new(%attrs);
 
@@ -29,6 +30,7 @@ sub new {
 
 sub _fetch_page {
     my ($self, $url) = @_;
+    print STDERR "DEBUG: _fetch_page called for $url. Debug flag: " . ($self->{'debug'} // 'undef') . "\n" if $self->{'debug'};
 
     my $authority = _authority_for($url);
 
@@ -43,9 +45,11 @@ sub _fetch_page {
 
     my $mode = $self->{'_mode_by_authority'}{$authority};
     if ($mode && $mode eq 'chromium') {
+        print STDERR "Use Chromium (forced): $url\n" if $self->{'debug'};
         return $self->{'_chromium'}->_fetch_page($url);
     }
     if ($mode && $mode eq 'http') {
+        print STDERR "Use HTTP (forced): $url\n" if $self->{'debug'};
         return $self->SUPER::_fetch_page($url);
     }
 
@@ -55,8 +59,14 @@ sub _fetch_page {
             my $chromium_resp = $self->{'_chromium'}->_fetch_page($url);
             if ($chromium_resp->{'success'}) {
                 $self->{'_mode_by_authority'}{$authority} = 'chromium';
+                print STDERR "Switched to Chromium: $url\n" if $self->{'debug'};
                 return $chromium_resp;
             }
+            # If Chromium failed but we decided we SHOULD use it, we shouldn't fallback to HTTP
+            # because that returns raw dynamic logic which is useless.
+            # However, if we return failure here, the crawl stops for this page.
+            # But at least we don't poison the cache with 'http' mode.
+            return $chromium_resp;
         }
         $self->{'_mode_by_authority'}{$authority} = 'http';
         return $resp;
@@ -70,6 +80,7 @@ sub _fetch_page {
     my $chromium_resp = $self->{'_chromium'}->_fetch_page($url);
     if ($chromium_resp->{'success'}) {
         $self->{'_mode_by_authority'}{$authority} = 'chromium';
+        print STDERR "Use Chromium (fallback): $url\n" if $self->{'debug'};
         return $chromium_resp;
     }
 
@@ -78,6 +89,7 @@ sub _fetch_page {
 
 sub _should_use_chromium {
     my ($self, $url, $resp) = @_;
+    print STDERR "DEBUG: _should_use_chromium checking $url\n" if $self->{'debug'};
 
     if ($self->{'auto_decider'} && ref $self->{'auto_decider'} eq 'CODE') {
         return $self->{'auto_decider'}->($url, $resp, $self) ? 1 : 0;
@@ -89,15 +101,33 @@ sub _should_use_chromium {
     my $headers = $resp->{'headers'} || {};
     my $ctype = $headers->{'content-type'} || $headers->{'Content-Type'} || '';
     if ($ctype ne '' && $ctype !~ m{\btext/html\b}i) {
+        print STDERR "DEBUG: Not text/html ($ctype)\n" if $self->{'debug'};
         return 0;
     }
 
-    return 1 if $content =~ /<noscript[^>]*>.*?(enable javascript|requires javascript|turn on javascript|javascript required)/is;
-    return 1 if $content =~ /id\s*=\s*["'](?:app|root|__next|__nuxt|svelte|react-root)["']/i
-        && $content !~ /<a\b/i
-        && $content !~ /<form\b/i;
-    return 1 if length($content) < $self->{'auto_min_bytes'} && $content =~ /<script\b/i;
+    if ($content =~ /data-capo/i) {
+        print STDERR "DEBUG: Found data-capo\n" if $self->{'debug'};
+        return 1;
+    }
 
+    if ($content =~ /<noscript[^>]*>.*?(enable javascript|requires javascript|turn on javascript|javascript required)/is) {
+        print STDERR "DEBUG: Found noscript requirement\n" if $self->{'debug'};
+        return 1;
+    }
+    if ($content =~ /id\s*=\s*["'](?:app|root|__next|__nuxt|svelte|react-root)["']/i) {
+        print STDERR "DEBUG: Found SPA ID\n" if $self->{'debug'};
+        return 1;
+    }
+    if ($content =~ /window\.(?:__NUXT__|__NEXT_DATA__)/i) {
+        print STDERR "DEBUG: Found window.__NUXT__ or similar\n" if $self->{'debug'};
+        return 1;
+    }
+    if (length($content) < $self->{'auto_min_bytes'} && $content =~ /<script\b/i) {
+        print STDERR "DEBUG: Small content with script\n" if $self->{'debug'};
+        return 1;
+    }
+
+    print STDERR "DEBUG: No indicators found. Content length: " . length($content) . "\n" if $self->{'debug'};
     return 0;
 }
 

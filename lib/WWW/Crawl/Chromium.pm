@@ -19,18 +19,24 @@ sub _fetch_page {
         || $self->{'chromium'}
         || 'chromium';
     my $timeout = $self->{'chromium_timeout'} // 120;
-    my $virtual_time_budget = $self->{'chromium_time_budget'} // 10000;
+    my $virtual_time_budget = $self->{'chromium_time_budget'} // 20000;
     my $proxy = $self->{'proxy'} // 'direct://';
 
-    my @command = (
+    my $chrome_ua = $self->{'agent'} // "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36";
+    my $retry_count = $self->{'retry_count'} // 0;
+    
+    my @base_command = (
         $chromium_path,
-        '--headless',
+        '--headless=new',
         qq{--proxy-server=$proxy},
+        qq{--user-agent=$chrome_ua},
+        '--window-size=1920,1080',
         '--no-sandbox',
         '--disable-gpu',
         '--disable-dev-shm-usage',
         '--disable-software-rasterizer',
         '--disable-features=VaapiVideoDecoder',
+        '--disable-site-isolation-trials',
         '--password-store=basic',
         '--use-mock-keychain',
         '--log-level=3',
@@ -41,6 +47,24 @@ sub _fetch_page {
         '--dump-dom',
         $url,
     );
+
+    my $result;
+    for my $attempt (0 .. $retry_count) {
+        if ($attempt > 0) {
+            print STDERR "DEBUG: Retry attempt $attempt for $url\n" if $self->{'debug'};
+            sleep 1; 
+        }
+        
+        $result = $self->_execute_chromium(\@base_command, $timeout);
+        last if $result->{'success'};
+    }
+    
+    return $result;
+}
+
+sub _execute_chromium {
+    my ($self, $command, $timeout) = @_;
+    my @command = @$command;
 
     my $content = '';
     my $error_output = '';
