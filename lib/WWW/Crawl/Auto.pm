@@ -215,6 +215,13 @@ C<debug>: Enable debug logging to STDERR when set to a true value.
 
 =back
 
+=head1 CONSTRUCTOR
+
+=head2 new(%options)
+
+Creates a new C<WWW::Crawl::Auto> object. Options are the same as
+C<WWW::Crawl>, plus the options listed above.
+
 =head1 METHODS
 
 All public methods are inherited from C<WWW::Crawl>.
